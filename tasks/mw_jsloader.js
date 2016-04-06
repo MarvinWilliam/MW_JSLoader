@@ -98,7 +98,7 @@ module.exports = function (grunt) {
                      .replace(/\{\{scriptid\}\}/, options.scriptid)
                      .replace(/\{\{dataoptionname\}\}/, options.dataoptionname)
                      .replace(/\{\{maindataoptionname\}\}/, options.dataoptionname + '_main')
-                     .replace(/\{\{maindestscripts\}\}/, maindestscriptname);
+                     .replace(/\{\{maindestscripts\}\}/, encodeURIComponent(maindestscriptname));
 
       grunt.verbose.writeln('Ready to replace content.');
 
