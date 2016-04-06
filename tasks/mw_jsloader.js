@@ -15,6 +15,7 @@ module.exports = function (grunt) {
             dist: 'index.html',
             separator: ',',
             dataoptionname: '',
+            mainscriptname: '',
             scriptid: 'mw_jsloader'
           },
         //Jsloader full scripts block
@@ -28,19 +29,20 @@ module.exports = function (grunt) {
         //Each script src of jsloader
         regex_scriptsrc = /['"]([^'"]+\.js)['"],?/gi,
         //Dest script tag template
-        destscript      = '<script src="{{destscriptsrc}}" id="{{scriptid}}" data-{{dataoptionname}}="{{destscripts}}"></script>';
+        destscript      = '<script src="{{destscriptsrc}}" id="{{scriptid}}" data-{{dataoptionname}}="{{destscripts}}" data-{{maindataoptionname}}="{{maindestscripts}}"></script>';
 
     if (!grunt.file.exists(options.dist)) {
       grunt.log.warn('Source file "' + options.dist + '" not found.');
       return;
     }
 
-    var htmlcontent     = grunt.file.read(options.dist),
-        jsloadercontext = '',
-        jsloaderconfig  = [],
-        destscriptsrc   = '',
-        destscriptname  = '',
-        scripts         = [];
+    var htmlcontent        = grunt.file.read(options.dist),
+        jsloadercontext    = '',
+        jsloaderconfig     = [],
+        destscriptsrc      = '',
+        destscriptname     = '',
+        maindestscriptname = '',
+        scripts            = [];
 
     if (!htmlcontent) {
       grunt.log.warn('There is no content of ' + options.dist + '.');
@@ -74,6 +76,10 @@ module.exports = function (grunt) {
           destscriptsrc = result;
           return '';
         }
+        if (result.indexOf(options.mainscriptname) > -1) {
+          maindestscriptname = result;
+          return '';
+        }
         return encodeURIComponent(result);
       }).reduce(function (prev, cur) {
         if (cur) {
@@ -90,7 +96,9 @@ module.exports = function (grunt) {
       result = result.replace(/\{\{destscripts\}\}/, destscriptsrcs())
                      .replace(/\{\{destscriptsrc\}\}/, destscriptsrc)
                      .replace(/\{\{scriptid\}\}/, options.scriptid)
-                     .replace(/\{\{dataoptionname\}\}/, options.dataoptionname);
+                     .replace(/\{\{dataoptionname\}\}/, options.dataoptionname)
+                     .replace(/\{\{maindataoptionname\}\}/, options.dataoptionname + '_main')
+                     .replace(/\{\{maindestscripts\}\}/, maindestscriptname);
 
       grunt.verbose.writeln('Ready to replace content.');
 
